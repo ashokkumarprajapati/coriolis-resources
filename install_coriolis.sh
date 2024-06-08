@@ -229,10 +229,16 @@ crudini --set /etc/coriolis/coriolis.conf database connection mysql+pymysql://co
 
 mysql -u root -p$MYSQL_ROOT_PASSWORD << EOF
 CREATE DATABASE coriolis;
-GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'localhost' \
-  IDENTIFIED BY '$CORIOLIS_DB_PASSWORD';
-GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'%' \
-  IDENTIFIED BY '$CORIOLIS_DB_PASSWORD';
+ALTER DATABASE coriolis CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci; #Added to ensure all tables are created.
+CREATE USER 'coriolis'@'localhost' IDENTIFIED BY '$CORIOLIS_DB_PASSWOR';
+CREATE USER 'coriolis'@'%' IDENTIFIED BY '$CORIOLIS_DB_PASSWOR';
+GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'localhost;
+GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'%';
+
+#GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'localhost' \
+#  IDENTIFIED BY '$CORIOLIS_DB_PASSWORD';
+#GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'%' \
+#  IDENTIFIED BY '$CORIOLIS_DB_PASSWORD';
 EOF
 
 su -s /bin/sh -c "python3 coriolis/coriolis/cmd/db_sync.py"
